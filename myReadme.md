@@ -30,13 +30,10 @@ first install it pls trust me its not a virus : `npx -y @posthog/wizard@latest`
 
 ### MongoDb Setup
 1. Create newProject , create new cluster , get uri , and save username and password.
-2. Choose connection Method : directly Drivers, aka in our DevEvent Project itself : give URI 
-
-3. implement-posthog brach is completed so do commit , setup stream , push and merge :    
-**And Create Database-modals branch**
+2. Choose connection method: Drivers (connect directly in the DevEvent project itself using the URI)
+3. implement-posthog branch is completed so do commit , setup stream , push and merge :    **And Create Database-modals branch**
 
 ### Dont forget to add Ip Access 
+### Don't forget to add IP Access 
 ![2026-02-17-23-52-02.png](./screenshots/2026-02-17-23-52-02.png)
-by Clicking (Add IP Address)-> (Allow Acess From Anywhere )
-
-**This make sure we can connect to our database after deployment without any issue**
+By clicking (Add IP Address) → (Allow Access From Anywhere)**This make sure we can connect to our database after deployment without any issue**

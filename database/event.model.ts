@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
+import { parseISO, isValid } from 'date-fns';
 
 // TypeScript interface for Event document
 export interface IEvent extends Document {
@@ -120,22 +121,32 @@ const EventSchema = new Schema<IEvent>(
 EventSchema.pre('save', function () {
   // Generate slug only if title is modified or new document
   if (this.isModified('title') || this.isNew) {
-    this.slug = this.title
+    const baseSlug = this.title
       .toLowerCase()
       .trim()
       .replace(/[^\w\s-]/g, '') // Remove special characters
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
       .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+    // Append short unique suffix to prevent collisions
+    this.slug = `${baseSlug}-${this._id.toString().slice(-6)}`;
   }
-
   // Normalize date to ISO format (YYYY-MM-DD)
   if (this.isModified('date') || this.isNew) {
-    const dateObj = new Date(this.date);
-    if (isNaN(dateObj.getTime())) {
-      throw new Error('Invalid date format');
+    // Validate strict ISO date format (YYYY-MM-DD)
+    const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!isoDateRegex.test(this.date)) {
+      throw new Error('Date must be in YYYY-MM-DD format');
     }
-    this.date = dateObj.toISOString().split('T')[0];
+    
+    // Use strict parser to validate the date without timezone conversion
+    const dateObj = parseISO(this.date);
+    if (!isValid(dateObj)) {
+      throw new Error('Invalid date: please provide a valid date in YYYY-MM-DD format');
+    }
+    
+    // Store the normalized YYYY-MM-DD string (already validated)
+    this.date = this.date;
   }
 
   // Normalize time to HH:MM format

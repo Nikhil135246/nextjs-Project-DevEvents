@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Model, Types } from 'mongoose';
+import validator from 'validator';
 
 // TypeScript interface for Booking document
 export interface IBooking extends Document {
@@ -21,10 +22,10 @@ const BookingSchema = new Schema<IBooking>(
       required: [true, 'Email is required'],
       trim: true,
       lowercase: true,
-      match: [
-        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        'Please provide a valid email address',
-      ],
+      validate: {
+        validator: (v: string) => validator.isEmail(v),
+        message: 'Please provide a valid email address',
+      },
     },
   },
   {
@@ -39,21 +40,20 @@ const BookingSchema = new Schema<IBooking>(
 BookingSchema.pre('save', async function () {
   // Only validate eventId if it's modified or new
   if (this.isModified('eventId') || this.isNew) {
+    // Dynamically import Event model to avoid circular dependency issues
+    let Event;
     try {
-      // Dynamically import Event model to avoid circular dependency issues
-      const Event = mongoose.models.Event || (await import('./event.model')).default;
-      
-      const eventExists = await Event.exists({ _id: this.eventId });
-      
-      if (!eventExists) {
-        throw new Error('Referenced event does not exist');
-      }
+      Event = mongoose.models.Event || (await import('./event.model')).default;
     } catch (error) {
-      throw new Error('Failed to validate event reference');
+      throw new Error('Failed to load Event model for validation');
+    }
+
+    const eventExists = await Event.exists({ _id: this.eventId });
+    if (!eventExists) {
+      throw new Error('Referenced event does not exist');
     }
   }
 });
-
 // Create index on eventId for faster queries
 BookingSchema.index({ eventId: 1 });
 
