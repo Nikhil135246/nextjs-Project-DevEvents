@@ -29,7 +29,7 @@ export async function POST(req: NextRequest)
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        const uploadResult = await new Promise
+        
         const createdEvent = await Event.create(event);
 
         return NextResponse.json({message:'Event created successfully', event: createdEvent}, {status:201});
