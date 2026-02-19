@@ -37,3 +37,47 @@ first install it pls trust me its not a virus : `npx -y @posthog/wizard@latest`
 ### Don't forget to add IP Access 
 ![2026-02-17-23-52-02.png](./screenshots/2026-02-17-23-52-02.png)
 By clicking (Add IP Address) → (Allow Access From Anywhere)**This make sure we can connect to our database after deployment without any issue**
+
+
+## First API Route Creation: 
+
+1. Folder Structure = Route sl (app/api/events) 
+2. now add POST funtion by next and configure POST Req.
+### ☁️ Cloudinary
+
+**Cloudinary** is a cloud-based media management service used to **upload, store, optimize, and deliver images & videos** efficiently.
+
+#### ✅ What it provides:
+- 📤 Upload and securely store images/videos in the cloud  
+- ⚡ Automatic optimization & resizing for faster loading  
+- 🌍 CDN delivery for high-performance media access worldwide
+
+### Setup 
+1. Dashboard->upload then 
+![2026-02-19-14-41-22.png](./screenshots/2026-02-19-14-41-22.png)
+2. Api -> Copy api , Paste into vscode env.
+3. Generate : api key and u will get (api key , api secrete ) . paste on .env at there **placeholder**
+4. Modify next.config.ts to accept images
+```js
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+
+  // Allow images from Cloudinary
+  images:{
+    remotePatterns:[
+      {
+        protocol:'https',
+        hostname:'res.cloudinary.com',
+      }
+    ]
+  },
+```
+
+5. Don't forget : `npm install cloudinary`
+
+### Cloudinary Configuration 
+
+## Conclusion 
+**Mongodb** optimized for data, json
+**Cloudinary** optimized for media.
