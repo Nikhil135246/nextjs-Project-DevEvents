@@ -20,6 +20,9 @@
         nextConfig.ts mein do reactCompiler:true
 ![alt text](/screenshots/image3.png)
 
+    3. Environment vaiable with preffix : NEXT_PUBLIC_... is accessable client as well as serversite too 
+    4. Use Slug for SEO : other wise why using next js , u want your page rank up right.
+
 # latest next 16 features
     1.Tourbo pack file system caching :
         Next.js development builds reload faster by caching

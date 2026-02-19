@@ -78,6 +78,13 @@ const nextConfig: NextConfig = {
 
 ### Cloudinary Configuration 
 
+1. Check Routes setup for image upload using cloudinary
+
 ## Conclusion 
 **Mongodb** optimized for data, json
 **Cloudinary** optimized for media.
+
+
+## One imp tip : ADD to env 
+later on we can change this to the production URL when we deploy
+- NEXT_PUBLIC_BASE_URL=http://localhost:3000

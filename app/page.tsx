@@ -1,8 +1,17 @@
-import { events } from "../lib/constants";
+// import { events } from "../lib/constants";
+// ye events import karne ki zarurat nahi hai ab jab hum backend se events fetch kar rahe hain
+
+
+import { IEvent } from "../database";
 import EventCard from "./components/EventCard";
 import ExploreBtn from "./components/ExploreBtn";
 
-const Home =() =>{
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+// making page an async function to fetch events from database in future when we connect it with backend
+const Page = async() =>{
+
+  const respone = await fetch(`${BASE_URL}/api/events`);
+  const {events} = await respone.json();
 
 
   return (
@@ -17,7 +26,7 @@ const Home =() =>{
       <h3>Featured Events</h3>
       <ul className="events">
         
-        {events.map((event, index) => (
+        {events && events.length > 0 && events.map((event:IEvent) => (
           <li key={event.title}>
             <EventCard {...event}/>
           </li>
@@ -31,4 +40,4 @@ const Home =() =>{
   )
 
 }
-export default Home;
+export default Page;

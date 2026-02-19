@@ -128,8 +128,8 @@ EventSchema.pre('save', function () {
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
       .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-    // Append short unique suffix to prevent collisions
-    this.slug = `${baseSlug}-${this._id.toString().slice(-6)}`;
+    // Set slug from title only - this enforces unique titles via unique slug constraint
+    this.slug = baseSlug;
   }
   // Normalize date to ISO format (YYYY-MM-DD)
   if (this.isModified('date') || this.isNew) {

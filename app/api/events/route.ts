@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "../../../lib/mongodb";
 import { Event } from "../../../database";
+import { v2 as cloudinary } from "cloudinary";
+import { create } from "domain";
 
 export async function POST(req: NextRequest)
 {
@@ -29,7 +31,15 @@ export async function POST(req: NextRequest)
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        
+        const uploadResult = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream({ resource_type: 'image',folder:'DevEvent' }, (error, result) => {
+                if (error) reject(error);
+                resolve(result);
+            }).end(buffer);
+        });
+
+        event.image =(uploadResult as {secure_url: string}).secure_url; 
+
         const createdEvent = await Event.create(event);
 
         return NextResponse.json({message:'Event created successfully', event: createdEvent}, {status:201});
@@ -37,5 +47,23 @@ export async function POST(req: NextRequest)
     {
         console.error("Error creating event:", error);
         return NextResponse.json({message:'Event creation failed', error:error instanceof Error ? error.message : 'Unknown error'}, {status:500});
+    }
+}
+
+// We can also add GET method to fetch all events
+
+export async function GET()
+{
+    try{
+        await connectDB();
+        const events = await Event.find().sort({createdAt:-1});
+        return NextResponse.json({message:'Events fetched successfully', events}, {status:200});
+        
+    }catch(e){
+        // Basic error : cleaner for client friendly error message
+        // return NextResponse.json({message:'Failed to fetch events', error:e instanceof Error ? e.message : 'Unknown error'}, {status:500});
+
+        //! But for debugging purpose we can also return the whole error object
+        return NextResponse.json({message:'Failed to fetch events', error:e }, {status:500});
     }
 }
