@@ -20,6 +20,9 @@
         nextConfig.ts mein do reactCompiler:true
 ![alt text](/screenshots/image3.png)
 
+    3. Environment vaiable with preffix : NEXT_PUBLIC_... is accessable client as well as serversite too 
+    4. Use Slug for SEO : other wise why using next js , u want your page rank up right.
+
 # latest next 16 features
     1.Tourbo pack file system caching :
         Next.js development builds reload faster by caching
@@ -177,7 +180,85 @@ Ref:https://youtu.be/I1V9YWqRIeI?t=2590
 
 **Note:** If cache component is enabled, you don't need to set up PPR—Next.js handles it for you automatically.
 ---
-# Lesson 10: Search Engine Optimization (SEO)
+
+# Lesson 10 : Server Actions and Mutations
+
+![2026-02-23-12-11-06.png](./screenshots/2026-02-23-12-11-06.png)
+
+## What it is?
+Asynchronous functions that run **only on the server** to handle form submissions and data mutations securely without creating separate API routes.
+
+## How to use?
+
+**1. Create Server Action:**
+```tsx
+// app/actions/bookEvent.ts
+'use server'
+
+export async function bookEvent(formData: FormData) {
+    const email = formData.get('email') as string;
+    await db.bookings.create({ data: { email } });
+    revalidatePath('/events'); // Clear cache
+    return { success: true };
+}
+```
+
+**2. Use in Form (Client Component):**
+```tsx
+'use client'
+import { bookEvent } from '@/app/actions/bookEvent';
+
+export default function BookingForm() {
+    return (
+        <form action={bookEvent}>
+            <input name="email" type="email" required />
+            <button type="submit">Book Event</button>
+        </form>
+    );
+}
+```
+
+**3. With Loading State:**
+```tsx
+'use client'
+import { useTransition } from 'react';
+
+export default function BookingForm() {
+    const [isPending, startTransition] = useTransition();
+    
+    const handleSubmit = async (formData: FormData) => {
+        startTransition(async () => {
+            await bookEvent(formData);
+        });
+    };
+    
+    return (
+        <form action={handleSubmit}>
+            <input name="email" type="email" required />
+            <button disabled={isPending}>
+                {isPending ? 'Booking...' : 'Book Event'}
+            </button>
+        </form>
+    );
+}
+```
+
+## What it provides?
+
+✅ **Security** - Runs on server, API keys stay safe  
+✅ **Simpler Code** - No `/api` routes needed  
+✅ **Better Performance** - Smaller client JS bundle  
+✅ **Progressive Enhancement** - Works without JavaScript  
+✅ **Auto Caching** - Use `revalidatePath()` to update cached data  
+✅ **Error Handling** - Return errors safely to client  
+
+**vs API Routes:**
+- Server Actions: Inside components, direct function calls, progressive enhancement
+- API Routes: Separate files, `fetch()` calls, complex logic/webhooks
+
+---
+
+# Lesson 11: Search Engine Optimization (SEO)
 
 Next.js is great for SEO. You can add meta tags and other SEO info in two main ways:
 
@@ -193,3 +274,27 @@ Next.js is great for SEO. You can add meta tags and other SEO info in two main w
 - File-based meta can **override config-based** meta if both exist.
 ---
 
+
+# Errors You Might Face
+
+## 1. Mongoose Document vs Plain JS Object
+
+**Problem:**  
+Mongoose queries (like `findOne`, `find`) return Mongoose documents, not plain JavaScript objects.  
+If you try to use JS methods or serialize them (e.g., send to client), you may get errors or unexpected results.
+
+**Fix:**  
+Use `.lean()` at the end of your query to get plain JS objects.
+
+```js
+// ❌ Problematic (returns Mongoose docs)
+const event = await Event.findOne({ slug });
+const similar = await Event.find({ tags: { $in: event.tags } });
+
+// ✅ Correct (returns plain objects)
+const event = await Event.findOne({ slug }).lean();
+const similar = await Event.find({ tags: { $in: event.tags } }).lean();
+```
+
+**Why:**  
+Plain objects are safer for serialization, spreading, and passing to client components in Next.js.

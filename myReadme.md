@@ -37,3 +37,109 @@ first install it pls trust me its not a virus : `npx -y @posthog/wizard@latest`
 ### Don't forget to add IP Access 
 ![2026-02-17-23-52-02.png](./screenshots/2026-02-17-23-52-02.png)
 By clicking (Add IP Address) → (Allow Access From Anywhere)**This make sure we can connect to our database after deployment without any issue**
+
+
+## First API Route Creation: 
+
+1. Folder Structure = Route sl (app/api/events) 
+2. now add POST funtion by next and configure POST Req.
+### ☁️ Cloudinary
+
+**Cloudinary** is a cloud-based media management service used to **upload, store, optimize, and deliver images & videos** efficiently.
+
+#### ✅ What it provides:
+- 📤 Upload and securely store images/videos in the cloud  
+- ⚡ Automatic optimization & resizing for faster loading  
+- 🌍 CDN delivery for high-performance media access worldwide
+
+### Setup 
+1. Dashboard->upload then 
+![2026-02-19-14-41-22.png](./screenshots/2026-02-19-14-41-22.png)
+2. Api -> Copy api , Paste into vscode env.
+3. Generate : api key and u will get (api key , api secrete ) . paste on .env at there **placeholder**
+4. Modify next.config.ts to accept images
+```js
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+
+  // Allow images from Cloudinary
+  images:{
+    remotePatterns:[
+      {
+        protocol:'https',
+        hostname:'res.cloudinary.com',
+      }
+    ]
+  },
+```
+
+5. Don't forget : `npm install cloudinary`
+
+### Cloudinary Configuration 
+
+1. Check Routes setup for image upload using cloudinary
+
+## Conclusion 
+**Mongodb** optimized for data, json
+**Cloudinary** optimized for media.
+
+
+## One imp tip : ADD to env 
+later on we can change this to the production URL when we deploy
+- NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+
+
+## API + Frontend to show uniqe event details
+- Created a api / events/ [slug]  route.ts = return that event details
+- Created route = api/events/[slug] page.tsx that show event detials after fetching from above route
+
+
+
+## Creating BookEvent : aka Right part of evetn detaisl page
+
+1. Created BookEvent component (app>Component>bookevent)
+
+
+# ⚡ Caching in Next.js
+
+## What can you cache?
+- Database queries
+- API responses
+- Components
+- Expensive calculations
+
+## How to enable caching
+Add this to your `next.config.ts`:
+```js
+// Enable component caching
+cacheComponents: true
+```
+
+![2026-02-24-20-15-30.png](./screenshots/2026-02-24-20-15-30.png)
+
+## Useful cache options
+- `cache`: Cache a function/component
+- `cacheLife`: Set cache duration
+- `cacheTag`: Tag cache for invalidation
+
+## Example: Cache an API response
+```js
+import { cache } from 'next/cache'
+
+export const getEvents = cache(async () => {
+  // fetch events from DB
+})
+```
+
+## Example: Cache a component
+```js
+import { cache } from 'next/cache'
+
+const ExpensiveComponent = cache(() => {
+  // heavy computation or fetch
+})
+```
+
+> Caching improves performance and reduces server load. Use it wisely!

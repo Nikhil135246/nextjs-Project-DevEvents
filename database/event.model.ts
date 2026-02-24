@@ -124,12 +124,12 @@ EventSchema.pre('save', function () {
     const baseSlug = this.title
       .toLowerCase()
       .trim()
-      .replace(/[^\w\s-]/g, '') // Remove special characters
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/[_\s]+/g, '-') // Replace underscores and spaces with hyphens
+      .replace(/[^a-z0-9-]/g, '') // Remove characters not a-z, 0-9, or hyphen
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
       .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-    // Append short unique suffix to prevent collisions
-    this.slug = `${baseSlug}-${this._id.toString().slice(-6)}`;
+    // Set slug from title only - this enforces unique titles via unique slug constraint
+    this.slug = baseSlug;
   }
   // Normalize date to ISO format (YYYY-MM-DD)
   if (this.isModified('date') || this.isNew) {

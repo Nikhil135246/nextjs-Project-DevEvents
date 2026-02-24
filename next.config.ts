@@ -1,6 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Enable cachecomponent
+  cacheComponents:true,
+
+  // Allow images from Cloudinary
+  images:{
+    remotePatterns:[
+      {
+        protocol:'https',
+        hostname:'res.cloudinary.com',
+      }
+    ]
+  },
+
   /* Allow me to config nextjs features here */
   reactCompiler:true,
   experimental: {
