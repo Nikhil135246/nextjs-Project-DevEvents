@@ -136,9 +136,20 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> 
 
             </section>
         );
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error fetching event:', error);
-        return notFound();
+        
+        // Check if it's a 404 error
+        if (
+            error instanceof Response && error.status === 404 ||
+            (error as { status?: number })?.status === 404 ||
+            (error as { code?: string })?.code === 'ENOENT'
+        ) {
+            return notFound();
+        }
+        
+        // Rethrow other errors to trigger Next.js error boundary (500 page)
+        throw error;
     }
 }
 

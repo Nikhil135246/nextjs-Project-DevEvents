@@ -66,6 +66,7 @@ export async function GET(
       {
         success: true,
         data: event,
+        message: 'Event fetched successfully',
       },
       { status: 200 }
     );

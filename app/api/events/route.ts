@@ -4,6 +4,9 @@ import { Event } from "../../../database";
 import { v2 as cloudinary } from "cloudinary";
 import { create } from "domain";
 
+// Maximum file size: 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
 export async function POST(req: NextRequest)
 {
     try{
@@ -11,34 +14,63 @@ export async function POST(req: NextRequest)
 
         const formData = await req.formData();
         
-        let event ; 
+        let event: Record<string, unknown>;
 
         try {
-            event = Object.fromEntries(formData.entries());
+            event = Object.fromEntries(formData.entries()) as Record<string, unknown>;
         }catch (e) {
             return NextResponse.json({message:'Invalid form data'}, {status:400});
         }
         // Now as we setup Cloudinary , we can handle image uploads here
         const file = formData.get('image') as File | null;
         
-        // Make sure in mongodb we get tags,agenda as array of string not comma separated string like  tags :"['cloud', 'devops']"  we want :["cloud","devops"]
+        // Parse and validate tags and agenda arrays
+        let tags: string[];
+        let agenda: string[];
 
-        let tags = JSON.parse(formData.get('tags') as string);
-        let agenda = JSON.parse(formData.get('agenda') as string);
-        // above line converts the stringified array back to actual array of string
+        try {
+            const tagsRaw = formData.get('tags');
+            const agendaRaw = formData.get('agenda');
 
-        // Overwrite the tags and agenda in event object with parsed array values
+            if (!tagsRaw || !agendaRaw) {
+                return NextResponse.json({ message: 'Tags and agenda are required' }, { status: 400 });
+            }
 
+            tags = JSON.parse(tagsRaw as string);
+            agenda = JSON.parse(agendaRaw as string);
+        } catch {
+            return NextResponse.json({ message: 'Invalid tags or agenda format. Must be valid JSON arrays.' }, { status: 400 });
+        }
+
+        // Validate parsed values are arrays of strings
+        if (!Array.isArray(tags) || !tags.every((t) => typeof t === 'string')) {
+            return NextResponse.json({ message: 'Tags must be an array of strings' }, { status: 400 });
+        }
+
+        if (!Array.isArray(agenda) || !agenda.every((a) => typeof a === 'string')) {
+            return NextResponse.json({ message: 'Agenda must be an array of strings' }, { status: 400 });
+        }
+
+        // Assign validated arrays to event object
         event.tags = tags;
         event.agenda = agenda;
 
-        // NO file presetn then return warning 
-        if(!file)
-        {
-            return NextResponse.json({message:"Image File chahiey bhai kya kr raha tu 😎"}, {status:400})
+        // Validate file exists
+        if (!file) {
+            return NextResponse.json({ message: 'Image file is required' }, { status: 400 });
         }
 
-        // if File present 
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            return NextResponse.json({ message: 'File must be an image (e.g., JPEG, PNG, GIF)' }, { status: 400 });
+        }
+
+        // Validate file size
+        if (file.size > MAX_FILE_SIZE) {
+            return NextResponse.json({ message: `Image size must not exceed ${MAX_FILE_SIZE / (1024 * 1024)}MB` }, { status: 400 });
+        }
+
+        // Process file after validation
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
@@ -68,13 +100,23 @@ export async function GET()
     try{
         await connectDB();
         const events = await Event.find().sort({createdAt:-1});
-        return NextResponse.json({message:'Events fetched successfully', events}, {status:200});
+        return NextResponse.json({success: true, data: events, message:'Events fetched successfully'}, {status:200});
         
     }catch(e){
-        // Basic error : cleaner for client friendly error message
-        // return NextResponse.json({message:'Failed to fetch events', error:e instanceof Error ? e.message : 'Unknown error'}, {status:500});
+        console.error('Error fetching events:', e);
+        
+        const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+        const response: Record<string, unknown> = {
+            success: false,
+            message: 'Failed to fetch events',
+        };
 
-        //! But for debugging purpose we can also return the whole error object
-        return NextResponse.json({message:'Failed to fetch events', error:e }, {status:500});
+        // Include detailed error info only in development
+        if (process.env.NODE_ENV === 'development') {
+            response.error = errorMessage;
+            response.stack = e instanceof Error ? e.stack : undefined;
+        }
+
+        return NextResponse.json(response, { status: 500 });
     }
 }

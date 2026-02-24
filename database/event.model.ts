@@ -124,8 +124,8 @@ EventSchema.pre('save', function () {
     const baseSlug = this.title
       .toLowerCase()
       .trim()
-      .replace(/[^\w\s-]/g, '') // Remove special characters
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/[_\s]+/g, '-') // Replace underscores and spaces with hyphens
+      .replace(/[^a-z0-9-]/g, '') // Remove characters not a-z, 0-9, or hyphen
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
       .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
     // Set slug from title only - this enforces unique titles via unique slug constraint

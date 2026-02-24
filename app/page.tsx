@@ -1,13 +1,9 @@
-// import { events } from "../lib/constants";
-// ye events import karne ki zarurat nahi hai ab jab hum backend se events fetch kar rahe hain
-
-
 import { cacheLife } from "next/cache";
 import { IEvent } from "../database";
 import EventCard from "./components/EventCard";
 import ExploreBtn from "./components/ExploreBtn";
+import { getAllEvents } from "@/lib/actions/event.actions";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const Page = async () => {
 
   // im caching conent for 1 hour
@@ -17,19 +13,10 @@ const Page = async () => {
   'use cache';
   cacheLife("hours");
 
-  
-  let events = [];
+  let events: IEvent[] = [];
 
   try {
-    if (!BASE_URL) {
-      console.error('NEXT_PUBLIC_BASE_URL is not defined');
-    } else {
-      const response = await fetch(`${BASE_URL}/api/events`);
-      if (response.ok) {
-        const data = await response.json();
-        events = data.events ?? [];
-      }
-    }
+    events = await getAllEvents();
   } catch (error) {
     console.error('Failed to fetch events:', error);
   }

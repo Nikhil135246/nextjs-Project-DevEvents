@@ -277,7 +277,7 @@ Next.js is great for SEO. You can add meta tags and other SEO info in two main w
 
 # Errors You Might Face
 
-### 1. Mongoose Document vs Plain JS Object
+## 1. Mongoose Document vs Plain JS Object
 
 **Problem:**  
 Mongoose queries (like `findOne`, `find`) return Mongoose documents, not plain JavaScript objects.  
