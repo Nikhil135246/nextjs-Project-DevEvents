@@ -88,3 +88,58 @@ const nextConfig: NextConfig = {
 ## One imp tip : ADD to env 
 later on we can change this to the production URL when we deploy
 - NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+
+
+## API + Frontend to show uniqe event details
+- Created a api / events/ [slug]  route.ts = return that event details
+- Created route = api/events/[slug] page.tsx that show event detials after fetching from above route
+
+
+
+## Creating BookEvent : aka Right part of evetn detaisl page
+
+1. Created BookEvent component (app>Component>bookevent)
+
+
+# ⚡ Caching in Next.js
+
+## What can you cache?
+- Database queries
+- API responses
+- Components
+- Expensive calculations
+
+## How to enable caching
+Add this to your `next.config.ts`:
+```js
+// Enable component caching
+cacheComponents: true
+```
+
+![2026-02-24-20-15-30.png](./screenshots/2026-02-24-20-15-30.png)
+
+## Useful cache options
+- `cache`: Cache a function/component
+- `cacheLife`: Set cache duration
+- `cacheTag`: Tag cache for invalidation
+
+## Example: Cache an API response
+```js
+import { cache } from 'next/cache'
+
+export const getEvents = cache(async () => {
+  // fetch events from DB
+})
+```
+
+## Example: Cache a component
+```js
+import { cache } from 'next/cache'
+
+const ExpensiveComponent = cache(() => {
+  // heavy computation or fetch
+})
+```
+
+> Caching improves performance and reduces server load. Use it wisely!

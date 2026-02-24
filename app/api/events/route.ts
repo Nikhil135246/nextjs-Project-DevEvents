@@ -20,6 +20,17 @@ export async function POST(req: NextRequest)
         }
         // Now as we setup Cloudinary , we can handle image uploads here
         const file = formData.get('image') as File | null;
+        
+        // Make sure in mongodb we get tags,agenda as array of string not comma separated string like  tags :"['cloud', 'devops']"  we want :["cloud","devops"]
+
+        let tags = JSON.parse(formData.get('tags') as string);
+        let agenda = JSON.parse(formData.get('agenda') as string);
+        // above line converts the stringified array back to actual array of string
+
+        // Overwrite the tags and agenda in event object with parsed array values
+
+        event.tags = tags;
+        event.agenda = agenda;
 
         // NO file presetn then return warning 
         if(!file)

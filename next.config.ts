@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Enable cachecomponent
+  cacheComponents:true,
 
   // Allow images from Cloudinary
   images:{
