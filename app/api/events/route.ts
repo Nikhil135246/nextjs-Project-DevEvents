@@ -75,8 +75,8 @@ export async function POST(req: NextRequest)
         const buffer = Buffer.from(arrayBuffer);
 
         const uploadResult = await new Promise((resolve, reject) => {
-            cloudinary.uploader.upload_stream({ resource_type: 'image',folder:'DevEvent' }, (error, result) => {
-                if (error) reject(error);
+            cloudinary.uploader.upload_stream({ resource_type: 'image', folder: 'DevEvent' }, (error, result) => {
+                if (error) return reject(error);
                 resolve(result);
             }).end(buffer);
         });
