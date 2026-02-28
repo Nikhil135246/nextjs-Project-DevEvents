@@ -1,4 +1,6 @@
+export const dynamic = 'force-dynamic';
 import Image from 'next/image';
+
 import { notFound } from 'next/navigation';
 import BookEvent from '../../components/BookEvent';
 import { getSimilarEventsBySlug } from '../../../lib/actions/event.actions';

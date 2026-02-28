@@ -3,7 +3,7 @@ import { IEvent } from "../database";
 import EventCard from "./components/EventCard";
 import ExploreBtn from "./components/ExploreBtn";
 import { getAllEvents } from "@/lib/actions/event.actions";
-
+export const dynamic = 'force-dynamic';
 const Page = async () => {
 
   // im caching conent for 1 hour
