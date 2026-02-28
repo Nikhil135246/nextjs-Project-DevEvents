@@ -1,17 +1,11 @@
-import { cacheLife } from "next/cache";
+import { unstable_noStore as noStore } from "next/cache";
 import { IEvent } from "../database";
 import EventCard from "./components/EventCard";
 import ExploreBtn from "./components/ExploreBtn";
 import { getAllEvents } from "@/lib/actions/event.actions";
-export const dynamic = 'force-dynamic';
-const Page = async () => {
 
-  // im caching conent for 1 hour
-  // so that it will not fetch data from backend every time,
-  // it will serve from cache for 1 hour 
-  // Even if u refresht the page
-  'use cache';
-  cacheLife("hours");
+const Page = async () => {
+  noStore();
 
   let events: IEvent[] = [];
 

@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+import { unstable_noStore as noStore } from 'next/cache';
 import Image from 'next/image';
 
 import { notFound } from 'next/navigation';
@@ -41,6 +41,7 @@ const EventTags = ({ tags }: { tags: string[] }) => (
 
 
 const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
+    noStore();
     const { slug } = await params;
 
     try {
