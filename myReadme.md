@@ -100,6 +100,7 @@ later on we can change this to the production URL when we deploy
 ## Creating BookEvent : aka Right part of evetn detaisl page
 
 1. Created BookEvent component (app>Component>bookevent)
+2. Created server-action(lib>action>booking.action.tsx) for to update database : for bookings
 
 
 # ⚡ Caching in Next.js
