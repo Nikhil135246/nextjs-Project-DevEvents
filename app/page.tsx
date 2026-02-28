@@ -1,11 +1,11 @@
-import { unstable_noStore as noStore } from "next/cache";
 import { IEvent } from "../database";
 import EventCard from "./components/EventCard";
 import ExploreBtn from "./components/ExploreBtn";
 import { getAllEvents } from "@/lib/actions/event.actions";
 
+export const dynamic = 'force-dynamic';
+
 const Page = async () => {
-  noStore();
 
   let events: IEvent[] = [];
 
